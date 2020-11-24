@@ -2,17 +2,17 @@ const request = require('request')
 
 const weatherURL = 'http://api.weatherstack.com/current?access_key=a269b01c4f1ac1897fb92aa02e326d43&query=37.8267,-122.4233&units=f'
 
-// request({ url: weatherURL, json: true}, (error, response) => {
-//   const weather = response.body.current
+request({ url: weatherURL, json: true}, (error, response) => {
+  const weather = response.body.current
 
-//   if (error) { // Low level check
-//     console.log('Unable to connect to weather service');
-//   } else if(response.body.error) { // Checking to see if error from response location for example.
-//     console.log('Unable to find location');
-//   } else {
-//     console.log(`It is currently ${weather.temperature} degrees outside.`);
-//   }
-// })
+  if (error) { // Low level check
+    console.log('Unable to connect to weather service');
+  } else if(response.body.error) { // Checking to see if error from response location for example.
+    console.log('Unable to find location');
+  } else {
+    console.log(`It is currently ${weather.temperature} degrees outside.`);
+  }
+})
 
 
 // GEOCODING PROCESS
