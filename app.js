@@ -1,33 +1,25 @@
-const request = require('request')
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
 
-const weatherURL = 'http://api.weatherstack.com/current?access_key=a269b01c4f1ac1897fb92aa02e326d43&query=37.8267,-122.4233&units=f'
+// Getting user input from command line using 'process.argv'
+const location = process.argv[2]
+if (!location) {
+  console.log('Please provide a address');
+} else {
+  geocode(location, (error, geocodeData) => {
+    if (error) {
+      return console.log(error);
+    }
 
-request({ url: weatherURL, json: true}, (error, response) => {
-  const weather = response.body.current
+    // CHAINING CALLBACKS
+    forecast(geocodeData.latitude, geocodeData.longitude , (error, forecastData) => {
+      if (error) {
+        return console.log(error);
+      }
 
-  if (error) { // Low level check
-    console.log('Unable to connect to weather service');
-  } else if(response.body.error) { // Checking to see if error from response location for example.
-    console.log('Unable to find location');
-  } else {
-    console.log(`It is currently ${weather.temperature} degrees outside.`);
-  }
-})
+      console.log(geocodeData.location);
+      console.log(forecastData);
+    })
+  })
+}
 
-
-// GEOCODING PROCESS
-const geocodeURL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/austin.json?access_token=pk.eyJ1IjoiZnJhemllcnIyIiwiYSI6ImNraHZidHplejE2OHYyeW54a3poNnR5M2sifQ.87yW8JgrmZ-y2jXQEfp1SA&limit=1'
-
-request({url: geocodeURL, json: true}, (error, response) => {
-  const userLocation = response.body.features[0]
-  const longitude = userLocation.center[0]
-  const latitude = userLocation.center[1]
-
-  if (error) {
-    console.log('Unable to connect to Geocode Service');
-  } else if (userLocation.length === 0) {
-    console.log('Unable to find location. Try another search.');
-  } else {
-    console.log('Longitude: ', longitude, ' Lattitude: ', latitude);
-  }
-})
